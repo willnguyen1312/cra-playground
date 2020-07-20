@@ -1,8 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import logo from "./logo.svg";
+import "./App.css";
 
 function App() {
+  useEffect(() => {
+    // window.onbeforeunload = function () {
+    //   fetch('http://localhost:3001/')
+    //   return null
+    // }
+    window.addEventListener("beforeunload", function (e) {
+      fetch("http://localhost:3001/");
+      return null;
+
+      // (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+      // return confirmationMessage; //Webkit, Safari, Chrome
+    });
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
