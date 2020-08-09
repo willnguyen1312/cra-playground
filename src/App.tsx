@@ -3,18 +3,15 @@ import logo from "./logo.svg";
 import "./App.css";
 
 function App() {
+  const send = () => {
+    fetch("http://localhost:3001/");
+  };
   useEffect(() => {
     // window.onbeforeunload = function () {
     //   fetch('http://localhost:3001/')
     //   return null
     // }
-    window.addEventListener("beforeunload", function (e) {
-      fetch("http://localhost:3001/");
-      return null;
-
-      // (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-      // return confirmationMessage; //Webkit, Safari, Chrome
-    });
+    window.addEventListener("beforeunload", send);
   }, []);
 
   return (
