@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { filter } from "ramda";
+import faker from "faker";
+
+const generateImages = (number = 5) =>
+  Array.from({ length: number }).map(() => faker.image.avatar());
 
 const App = () => {
-  const filtered = filter((a) => a > 2, [1, 2, 3]);
+  const [images, setImages] = useState<string[]>(() => generateImages());
+  
 
-  console.log(filtered);
-
-  return <h1>Hello</h1>;
+  return (
+    <div>
+      <button onClick={() => setImages(generateImages())}>Randomize images</button>
+      <h1>Images</h1>
+      {images.map((image, index) => (
+        <img width={100} height={100} key={index} src={image} alt="random" />
+      ))}
+    </div>
+  );
 };
 
 export default App;
