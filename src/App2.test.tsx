@@ -3,6 +3,7 @@ import React from 'react'
 import {render, screen} from '@testing-library/react'
 
 import App2 from './App2'
+import * as sample from './sample'
 
 it('should work', () => {
     render(<App2 />)
@@ -18,4 +19,10 @@ it('should work', () => {
       });
 
     screen.debug()
+})
+
+it.only('aha', () => {
+  const spiedHello = jest.spyOn(sample, 'hello')
+  expect(sample.hello()).toBe(10)
+  expect(spiedHello).toHaveBeenCalledTimes(1)
 })
