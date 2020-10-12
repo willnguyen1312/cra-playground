@@ -5,11 +5,11 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.0.4",
-    "@testing-library/user-event": "^12.1.6",
+    "@testing-library/user-event": "^12.1.7",
     "@types/jest": "^26.0.14",
     "@types/lodash.debounce": "4.0.6",
-    "@types/node": "^14.11.2",
-    "@types/react": "^16.9.49",
+    "@types/node": "^14.11.5",
+    "@types/react": "^16.9.51",
     "@types/react-dom": "^16.9.8",
     "faker": "^5.1.0",
     "lodash": "^4.17.20",
@@ -47,9 +47,9 @@
     ]
   },
   "devDependencies": {
-    "@types/faker": "^5.1.0",
-    "@types/ramda": "^0.27.18",
+    "@types/faker": "^5.1.2",
+    "@types/ramda": "^0.27.20",
     "@types/react-router": "^5.1.8",
-    "@types/react-router-dom": "^5.1.5"
+    "@types/react-router-dom": "^5.1.6"
   }
 }
