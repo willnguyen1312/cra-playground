@@ -1,5 +1,9 @@
 import React from "react";
 
+import muxjs from "mux.js";
+
+console.log(muxjs);
+
 const App = () => {
   const [counter, setCounter] = React.useState(0);
 
