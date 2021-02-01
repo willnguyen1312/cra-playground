@@ -20,7 +20,7 @@ export default function App6() {
   return (
     <div>
       <h1>Hello there</h1>
-      <audio controls src={src} autoPlay />
+      <audio loop controls src={src} autoPlay />
       {/* <video controls src={src} /> */}
     </div>
   );
