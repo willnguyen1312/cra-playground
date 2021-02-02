@@ -1,3 +1,5 @@
+import { scaleLinear } from "d3-scale";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
