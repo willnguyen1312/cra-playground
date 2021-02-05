@@ -1,21 +1,28 @@
 import { useEffect, useState } from "react";
-// import mp3 from "./assets/sample.mp3";
 
 export default function App6() {
   const [src, setSrc] = useState(localStorage.getItem("src") as string);
-  //   useEffect(() => {
-  //     fetch("/sample.mp3")
-  //       .then((res) => res.blob())
-  //       .then((blob) => {
-  //         const reader = new FileReader();
-  //         reader.onload = () => {
-  //           setSrc(reader.result as string);
-  //         };
-  //         reader.readAsDataURL(blob);
-  //       });
-  //   }, []);
 
-  //   localStorage.setItem("src", src);
+  useEffect(() => {
+    const socket = (window as any).io("http://localhost:3333");
+    socket.on("connect", function () {
+      console.log("Connected");
+
+      socket.emit("events", { test: "test" });
+      socket.emit("identity", 0, (response) =>
+        console.log("Identity:", response)
+      );
+    });
+    socket.on("events", function (data) {
+      console.log("event", data);
+    });
+    socket.on("exception", function (data) {
+      console.log("event", data);
+    });
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+  }, []);
 
   return (
     <div>
