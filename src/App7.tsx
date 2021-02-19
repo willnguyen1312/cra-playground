@@ -2,6 +2,7 @@ import React from "react";
 
 const App = () => {
   const [currentTime, setCurrentTime] = React.useState(0);
+  const [duration, setDuration] = React.useState(0);
   const [isLoadedMetadata, setIsLoadedMetadata] = React.useState(false);
   const timerIdRef = React.useRef<NodeJS.Timeout>();
   const audioRef = React.useRef<HTMLAudioElement>(null);
@@ -15,7 +16,7 @@ const App = () => {
       // Duration is on of them
       // Properties like volume, currentTime, etc are modifiable
       // I don't have a complete list yet, sorry 😅
-      let duration = 10;
+      let duration = 100;
       Object.defineProperties(audio, {
         duration: {
           configurable: true,
@@ -58,13 +59,15 @@ const App = () => {
   return (
     <div>
       <h3>Media status: {`${isLoadedMetadata ? "READY" : "LOADING..."}`}</h3>
+      <h3>{isLoadedMetadata ? `Duration: ${duration} seconds` : null}</h3>
       <button disabled={!isLoadedMetadata} onClick={togglePlayMockedMedia}>
         Play mocked media
       </button>
       <h3>Current time: {currentTime}</h3>
       <audio
-        onLoadedMetadata={() => {
+        onLoadedMetadata={(event) => {
           setIsLoadedMetadata(true);
+          setDuration(event.currentTarget.duration);
         }}
         onTimeUpdate={(event) => {
           setCurrentTime(event.currentTarget.currentTime);
