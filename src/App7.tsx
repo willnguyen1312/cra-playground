@@ -45,7 +45,7 @@ const App = () => {
     }
   }, []);
 
-  const togglePlayMockedMedia = () => {
+  const playMockedMedia = () => {
     const audio = audioRef.current;
 
     if (audio) {
@@ -60,7 +60,7 @@ const App = () => {
     <div>
       <h3>Media status: {`${isLoadedMetadata ? "READY" : "LOADING..."}`}</h3>
       <h3>{isLoadedMetadata ? `Duration: ${duration} seconds` : null}</h3>
-      <button disabled={!isLoadedMetadata} onClick={togglePlayMockedMedia}>
+      <button disabled={!isLoadedMetadata} onClick={playMockedMedia}>
         Play mocked media
       </button>
       <h3>Current time: {currentTime}</h3>
