@@ -12,20 +12,36 @@ const App = () => {
     const audio = audioRef.current;
 
     if (audio) {
-      // We need to hijact any properties that are not modifiable from native media element
+      // We need to hijact any properties that are not modifiable (AKA readonly) from native media element
       // Duration is on of them
       // Properties like volume, currentTime, etc are modifiable
-      // I don't have a complete list yet, sorry 😅
+      // Here is the list - https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement#properties 😎
       let duration = 100;
+      let paused = true;
       Object.defineProperties(audio, {
         duration: {
-          configurable: true,
           get() {
             return duration;
           },
           set(newDuration: number) {
             duration = newDuration;
           },
+        },
+        paused: {
+          get() {
+            return paused;
+          },
+        },
+      });
+
+      Object.assign(audio, {
+        play: () => {
+          paused = false;
+          audio.dispatchEvent(new CustomEvent("play"));
+        },
+        pause: () => {
+          audio.dispatchEvent(new CustomEvent("pause"));
+          paused = true;
         },
       });
     }
@@ -61,10 +77,16 @@ const App = () => {
       <h3>Media status: {`${isLoadedMetadata ? "READY" : "LOADING..."}`}</h3>
       <h3>{isLoadedMetadata ? `Duration: ${duration} seconds` : null}</h3>
       <button disabled={!isLoadedMetadata} onClick={playMockedMedia}>
-        Play mocked media
+        Toggle play/pause mocked media
       </button>
       <h3>Current time: {currentTime}</h3>
       <audio
+        onPlay={(event) => {
+          console.log(event.currentTarget.paused);
+        }}
+        onPause={(event) => {
+          console.log(event.currentTarget.paused);
+        }}
         onLoadedMetadata={(event) => {
           setIsLoadedMetadata(true);
           setDuration(event.currentTarget.duration);
