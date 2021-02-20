@@ -125,6 +125,9 @@ const App = () => {
       </button>
       <h3>Current time: {currentTime}</h3>
       <audio
+        style={{
+          display: "none",
+        }}
         onDurationChange={(event) => {
           setDuration(event.currentTarget.duration);
         }}
