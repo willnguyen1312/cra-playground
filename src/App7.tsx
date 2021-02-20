@@ -16,22 +16,17 @@ const hijackMediaElement = (
 
   const redefinedProperties: {
     key: keyof typeof mediaProperties;
-    value: MediaPropertiesValue;
-    event: string;
+    event?: string;
   }[] = [
     {
       key: "duration",
-      value: mediaProperties.duration,
       event: "durationchange",
     },
     {
       key: "paused",
-      value: mediaProperties.paused,
-      event: "durationchange",
     },
     {
       key: "currentTime",
-      value: mediaProperties.currentTime,
       event: "timeupdate",
     },
   ];
@@ -41,11 +36,14 @@ const hijackMediaElement = (
     redefinedProperties.reduce((acc, cur) => {
       acc[cur.key] = {
         get() {
-          return cur.value;
+          return mediaProperties[cur.key];
         },
         set(newValue: MediaPropertiesValue) {
-          cur.value = newValue;
-          mediaElement.dispatchEvent(new CustomEvent(cur.event));
+          mediaProperties[cur.key] = newValue;
+
+          if (cur.event) {
+            mediaElement.dispatchEvent(new CustomEvent(cur.event));
+          }
         },
       };
       return acc;
@@ -67,61 +65,18 @@ const hijackMediaElement = (
 const App = () => {
   const [currentTime, setCurrentTime] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
-  const [isLoadedMetadata, setIsLoadedMetadata] = React.useState(false);
-  const timerIdRef = React.useRef<NodeJS.Timeout>();
+  const timerIdRef = React.useRef<number>();
   const audioRef = React.useRef<HTMLAudioElement>(null);
 
   // Hijact audio element
   React.useEffect(() => {
     const audio = audioRef.current;
-
     if (audio) {
-      // We need to hijact any properties that are not modifiable (AKA readonly) from native media element
-      // Duration is on of them
-      // Properties like volume, currentTime, etc are modifiable
-      // Here is the list - https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement#properties 😎
-      let duration = 100;
-      let paused = true;
-      Object.defineProperties(audio, {
-        duration: {
-          get() {
-            return duration;
-          },
-          set(newDuration: number) {
-            duration = newDuration;
-          },
-        },
-        paused: {
-          get() {
-            return paused;
-          },
-        },
-      });
+      hijackMediaElement(audio);
 
-      Object.assign(audio, {
-        play: () => {
-          paused = false;
-          audio.dispatchEvent(new CustomEvent("play"));
-        },
-        pause: () => {
-          paused = true;
-          audio.dispatchEvent(new CustomEvent("pause"));
-        },
-      });
-    }
-  }, []);
-
-  // Dispatch audio event listeners
-  React.useEffect(() => {
-    const audio = audioRef.current;
-
-    if (audio) {
       setTimeout(() => {
-        // If we need to support IE, polyfill is very simple
-        // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#polyfill
-        audio.dispatchEvent(new CustomEvent("loadedmetadata"));
-      }, 3000);
-      // ☝️ We fake server response time here for loadedmetadata event
+        (audio as any).duration = 100;
+      }, 2000);
     }
   }, []);
 
@@ -129,30 +84,30 @@ const App = () => {
     const audio = audioRef.current;
 
     if (audio) {
-      timerIdRef.current = setInterval(() => {
-        audio.currentTime += 1;
-        audio.dispatchEvent(new CustomEvent("timeupdate"));
-      }, 1000);
+      if (audio.paused) {
+        audio.play();
+        timerIdRef.current = (setInterval(() => {
+          audio.currentTime += 1;
+        }, 1000) as unknown) as number;
+      } else {
+        audio.pause();
+        clearInterval(timerIdRef.current);
+      }
     }
   };
 
+  const isReady = duration !== 0;
+
   return (
     <div>
-      <h3>Media status: {`${isLoadedMetadata ? "READY" : "LOADING..."}`}</h3>
-      <h3>{isLoadedMetadata ? `Duration: ${duration} seconds` : null}</h3>
-      <button disabled={!isLoadedMetadata} onClick={playMockedMedia}>
+      <h3>Media status: {`${isReady ? "READY" : "LOADING..."}`}</h3>
+      <h3>{isReady ? `Duration: ${duration} seconds` : null}</h3>
+      <button disabled={!isReady} onClick={playMockedMedia}>
         Toggle play/pause mocked media
       </button>
       <h3>Current time: {currentTime}</h3>
       <audio
-        onPlay={(event) => {
-          console.log(event.currentTarget.paused);
-        }}
-        onPause={(event) => {
-          console.log(event.currentTarget.paused);
-        }}
-        onLoadedMetadata={(event) => {
-          setIsLoadedMetadata(true);
+        onDurationChange={(event) => {
           setDuration(event.currentTarget.duration);
         }}
         onTimeUpdate={(event) => {
