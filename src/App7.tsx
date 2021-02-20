@@ -1,5 +1,69 @@
 import React from "react";
 
+type MediaPropertiesValue = number | string | boolean;
+
+const hijackMediaElement = (
+  mediaElement: HTMLAudioElement | HTMLVideoElement
+) => {
+  const mediaProperties: Record<
+    "duration" | "paused" | "currentTime",
+    MediaPropertiesValue
+  > = {
+    duration: 0,
+    paused: true,
+    currentTime: 0,
+  };
+
+  const redefinedProperties: {
+    key: keyof typeof mediaProperties;
+    value: MediaPropertiesValue;
+    event: string;
+  }[] = [
+    {
+      key: "duration",
+      value: mediaProperties.duration,
+      event: "durationchange",
+    },
+    {
+      key: "paused",
+      value: mediaProperties.paused,
+      event: "durationchange",
+    },
+    {
+      key: "currentTime",
+      value: mediaProperties.currentTime,
+      event: "timeupdate",
+    },
+  ];
+
+  Object.defineProperties(
+    mediaElement,
+    redefinedProperties.reduce((acc, cur) => {
+      acc[cur.key] = {
+        get() {
+          return cur.value;
+        },
+        set(newValue: MediaPropertiesValue) {
+          cur.value = newValue;
+          mediaElement.dispatchEvent(new CustomEvent(cur.event));
+        },
+      };
+      return acc;
+    }, {})
+  );
+
+  Object.assign(mediaElement, {
+    play: () => {
+      mediaProperties.paused = false;
+      mediaElement.dispatchEvent(new CustomEvent("play"));
+    },
+    pause: () => {
+      mediaProperties.paused = true;
+      mediaElement.dispatchEvent(new CustomEvent("pause"));
+    },
+  });
+};
+
 const App = () => {
   const [currentTime, setCurrentTime] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
@@ -40,8 +104,8 @@ const App = () => {
           audio.dispatchEvent(new CustomEvent("play"));
         },
         pause: () => {
-          audio.dispatchEvent(new CustomEvent("pause"));
           paused = true;
+          audio.dispatchEvent(new CustomEvent("pause"));
         },
       });
     }
