@@ -5,6 +5,10 @@ import App from "./App7";
 import es6ObjectAssign from "es6-object-assign";
 import * as serviceWorker from "./serviceWorker";
 
+const { version } = require("../package.json");
+
+console.log(version);
+
 es6ObjectAssign.polyfill();
 
 ReactDOM.render(
