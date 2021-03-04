@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App7";
+import App from "./App8";
 import es6ObjectAssign from "es6-object-assign";
 import * as serviceWorker from "./serviceWorker";
 
